@@ -1,80 +1,210 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Learn Norwegian irregular verbs</title>
-    <link rel="stylesheet" href="style.css" />
+	<head>
+		<meta charset="UTF-8" />
+		<title>Learn Norwegian irregular verbs</title>
+		<link rel="stylesheet" href="style.css" />
 
-    <meta
-      name="viewport"
-      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
-    />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<meta
+			name="viewport"
+			content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+		/>
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <div id="set-selection-container">
-      <div id="set-cards"></div>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap"
+			rel="stylesheet"
+		/>
+	</head>
+	<body>
+		<div id="set-selection-container">
+			<div id="set-cards"></div>
 
-      <span id="set-cards-greeting">Выбери набор для изучения</span>
-    </div>
+			<span id="set-cards-greeting">Выбери набор для изучения</span>
+		</div>
 
-    <div id="game-result-container">
-      <div id="game-result-card">
-        <span id="game-result-rank"></span>
-        <span id="game-result-title">Ты отлично справился :)</span>
-        <span id="game-result-percent"></span>
-        <button id="game-result-back-button">К списку наборов</button>
-      </div>
-    </div>
+		<div id="card-carousel">
+			<div class="card">
+				<div class="card-header">
+					<div class="card-best-score">
+						<div class="card-best-result-percent">87%</div>
+						<div class="card-best-result-rank a"></div>
+					</div>
+				</div>
 
-    <div id="game-container">
-      <span id="game-progress"></span>
+				<span class="card-number">1</span>
+				<span class="card-title">Набор неправильных глаголов</span>
 
-      <div id="word-card">
-        <span id="word-card-title"></span>
-        <span id="word-card-word"></span>
-        <span id="word-card-subtitle"></span>
-      </div>
+				<div class="card-words-block">
+					<span class="card-words-block-title"
+						>Содержит 9 глаголов</span
+					>
 
-      <div id="input-container">
-        <input
-          type="text"
-          name="word"
-          id="word-input"
-          autocomplete="off"
-          placeholder="Ответ..."
-        />
-        <button id="send-word-button">
-          <svg
-            id="send-word-button-icon"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 17.69 17.73"
-          >
-            <defs>
-              <style>
-                .cls-1 {
-                  fill: #c1c8da;
-                  fill-rule: evenodd;
-                }
-              </style>
-            </defs>
-            <path
-              class="cls-1"
-              d="m.34,6.43L16.93.05c.26-.13.57-.02.7.24.07.13.07.28.02.42l-6.35,16.68h0c-.1.27-.4.41-.68.3-.13-.05-.23-.14-.29-.26l-2.56-5.29,5.08-7.27-7.25,5.06L.3,7.39c-.26-.13-.37-.44-.25-.7.06-.12.16-.21.28-.26Z"
-            />
-          </svg>
-          Проверить
-        </button>
-      </div>
-    </div>
+					<div class="card-words">
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+					</div>
+				</div>
 
-    <script defer src="app.js"></script>
-  </body>
+				<button class="card-play-button button">Начать игру</button>
+			</div>
+
+			<div class="card">
+				<div class="card-header">
+					<div class="card-best-score">
+						<div class="card-best-result-percent">87%</div>
+						<div class="card-best-result-rank a"></div>
+					</div>
+				</div>
+
+				<span class="card-number">2</span>
+				<span class="card-title">Набор неправильных глаголов</span>
+
+				<div class="card-words-block">
+					<span class="card-words-block-title"
+						>Содержит 9 глаголов</span
+					>
+
+					<div class="card-words">
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+					</div>
+				</div>
+
+				<button class="card-play-button button">Начать игру</button>
+			</div>
+
+			<div class="card">
+				<div class="card-header">
+					<div class="card-best-score">
+						<div class="card-best-result-percent">87%</div>
+						<div class="card-best-result-rank a"></div>
+					</div>
+				</div>
+
+				<span class="card-number">3</span>
+				<span class="card-title">Набор неправильных глаголов</span>
+
+				<div class="card-words-block">
+					<span class="card-words-block-title"
+						>Содержит 9 глаголов</span
+					>
+
+					<div class="card-words">
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+					</div>
+				</div>
+
+				<button class="card-play-button button">Начать игру</button>
+			</div>
+
+			<div class="card">
+				<div class="card-header">
+					<div class="card-best-score">
+						<div class="card-best-result-percent">87%</div>
+						<div class="card-best-result-rank a"></div>
+					</div>
+				</div>
+
+				<span class="card-number">4</span>
+				<span class="card-title">Набор неправильных глаголов</span>
+
+				<div class="card-words-block">
+					<span class="card-words-block-title"
+						>Содержит 9 глаголов</span
+					>
+
+					<div class="card-words">
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+						<span class="card-word">arbeide</span>
+					</div>
+				</div>
+
+				<button class="card-play-button button">Начать игру</button>
+			</div>
+		</div>
+
+		<div id="game-result-container">
+			<div id="game-result-card">
+				<span id="game-result-rank"></span>
+				<span id="game-result-title">Ты отлично справился :)</span>
+				<span id="game-result-percent"></span>
+				<button id="game-result-back-button">К списку наборов</button>
+			</div>
+		</div>
+
+		<div id="game-container">
+			<span id="game-progress"></span>
+
+			<div id="word-card">
+				<span id="word-card-title"></span>
+				<span id="word-card-word"></span>
+				<span id="word-card-subtitle"></span>
+			</div>
+
+			<div id="input-container">
+				<input
+					type="text"
+					name="word"
+					id="word-input"
+					autocomplete="off"
+					placeholder="Ответ..."
+				/>
+				<button id="send-word-button">
+					<svg
+						id="send-word-button-icon"
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 17.69 17.73"
+					>
+						<defs>
+							<style>
+								.cls-1 {
+									fill: #c1c8da;
+									fill-rule: evenodd;
+								}
+							</style>
+						</defs>
+						<path
+							class="cls-1"
+							d="m.34,6.43L16.93.05c.26-.13.57-.02.7.24.07.13.07.28.02.42l-6.35,16.68h0c-.1.27-.4.41-.68.3-.13-.05-.23-.14-.29-.26l-2.56-5.29,5.08-7.27-7.25,5.06L.3,7.39c-.26-.13-.37-.44-.25-.7.06-.12.16-.21.28-.26Z"
+						/>
+					</svg>
+					Проверить
+				</button>
+			</div>
+		</div>
+
+		<script defer src="app.js"></script>
+	</body>
 </html>
