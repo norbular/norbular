@@ -684,8 +684,8 @@ body {
 
 #game-score-rank {
 	position: absolute;
-	top: -1em;
-	right: -1em;
+	top: 2em;
+	right: 2em;
 	display: inline-block;
 	animation: game-result-rank 600ms cubic-bezier(0.75, 0.1, 0.92, 0.14)
 		forwards;
