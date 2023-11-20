@@ -1,4 +1,5 @@
 const soundFolder = "assets/audio";
+const backgroundVariations = 8;
 
 const soundVariants = {
 	"answer-correct": 5,
@@ -98,6 +99,53 @@ function playSound(soundName) {
 	sounds[`${soundName}-${variant}`].play();
 }
 
+function openSet(name) {}
+
+function setCookie(name, value, days = 365) {
+	var expires = "";
+	if (days) {
+		var date = new Date();
+		date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+		expires = "; expires=" + date.toUTCString();
+	}
+	document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
+
+function getCookie(name, defaultValue) {
+	var nameEQ = name + "=";
+	var ca = document.cookie.split(";");
+	for (var i = 0; i < ca.length; i++) {
+		var c = ca[i];
+		while (c.charAt(0) == " ") c = c.substring(1, c.length);
+		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+	}
+	return defaultValue;
+}
+
+function getBestScoreForSet(name) {
+	return parseInt(getCookie(`${name}_score`, "0"));
+}
+
+function setBestScoreForSet(name, score) {
+	const bestScore = getBestScoreForSet(name);
+
+	if (bestScore < score) {
+		setCookie(`${name}_score`, score);
+	}
+}
+
+function eraseCookie(name) {
+	document.cookie =
+		name + "=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+}
+
+function setRandomBackground() {
+	document.body.style.backgroundImage = `url(/assets/backgrounds/${randomInt(
+		0,
+		backgroundVariations
+	)}.jpg)`;
+}
+
 const levenshteinDistance = (s, t) => {
 	if (!s.length) return t.length;
 	if (!t.length) return s.length;
@@ -181,7 +229,6 @@ class Question {
 	}
 
 	getAllAnswersCommaSeparated() {
-		я;
 		return this.hasMultipleAnswers() ? this.answer.join(", ") : this.answer;
 	}
 
@@ -273,6 +320,22 @@ class GameStatistics {
 		}
 	}
 
+	countCorrect() {
+		let correct = 0;
+
+		for (let type of GameStatistics.VERB_TYPES) {
+			for (let { infinitive } of this.set.verbs) {
+				correct += ["correct", "typo"].includes(
+					this.statistics[infinitive][type]
+				)
+					? 1
+					: 0;
+			}
+		}
+
+		return correct;
+	}
+
 	addStatistic(verb, verbType, answerType) {
 		if (!this.statistics.hasOwnProperty(verb)) {
 			this.statistics[verb] = {};
@@ -299,9 +362,7 @@ class GameStatistics {
 		return percent;
 	}
 
-	calculateRank() {
-		const percent = this.calculatePercent();
-
+	static calculateRank(percent) {
 		if (percent >= 90.0) {
 			return "S";
 		}
@@ -314,7 +375,16 @@ class GameStatistics {
 			return "B";
 		}
 
-		return "C";
+		if (percent >= 30.0) {
+			return "C";
+		}
+
+		return "None";
+	}
+
+	calculateRank() {
+		const percent = this.calculatePercent();
+		return GameStatistics.calculateRank(percent);
 	}
 }
 
@@ -682,7 +752,9 @@ class IrregularVerbsUI {
 
 	completeGame() {
 		playSound("game-completed");
-		new GameResultUI(this.statistics);
+		this.gameContainerEl.style.display = "none";
+		setBestScoreForSet(this.set.name, this.statistics.calculatePercent());
+		new GameScoreUI(this.set, this.statistics);
 	}
 
 	moveToTheNextQuestion() {
@@ -779,10 +851,27 @@ class IrregularVerbsUI {
 
 class CardCarouselUI {
 	constructor() {
+		setRandomBackground();
+
 		this.cardCarouselEl = document.getElementById("card-carousel");
+		this.leftSwipeButton = document.getElementById("left-swipe-button");
+		this.rightSwipeButton = document.getElementById("right-swipe-button");
+
+		for (const set of sets) {
+			this.cardCarouselEl.insertAdjacentHTML(
+				"beforeend",
+				this.#makeCardHtml(set)
+			);
+
+			const { name } = set;
+			const cardPlayButton = document.getElementById(
+				`card-play-button-${name}`
+			);
+			cardPlayButton.onclick = this.#openSet.bind(this, name);
+		}
+
 		this.cardEls = this.cardCarouselEl.querySelectorAll(".card");
 		this.currentCardIndex = 0;
-		this.isMoving = false;
 
 		document.onkeydown = (event) => {
 			switch (event.keyCode) {
@@ -796,7 +885,40 @@ class CardCarouselUI {
 			}
 		};
 
+		this.leftSwipeButton.onclick = () => this.swipeLeft();
+		this.rightSwipeButton.onclick = () => this.swipeRight();
+
+		let touchStartX = 0;
+		let touchEndX = 0;
+
+		const getSwipeLocation = () => {
+			return touchEndX < touchStartX ? "left" : "right";
+		};
+
+		document.addEventListener("touchstart", (e) => {
+			touchStartX = e.changedTouches[0].screenX;
+		});
+
+		document.addEventListener("touchend", (e) => {
+			touchEndX = e.changedTouches[0].screenX;
+
+			switch (getSwipeLocation()) {
+				case "left":
+					this.swipeRight();
+					break;
+
+				case "right":
+					this.swipeLeft();
+					break;
+			}
+		});
+
 		this.#showCard(this.currentCardIndex);
+	}
+
+	#openSet(name) {
+		new IrregularVerbsUI(...sets).startGame(name);
+		this.cardCarouselEl.style.display = "none";
 	}
 
 	#countCards() {
@@ -821,12 +943,14 @@ class CardCarouselUI {
 		return ((index % cardsCount) + cardsCount) % cardsCount;
 	}
 
+	#hide() {
+		this.cardCarouselEl.style.display = "none";
+	}
+
 	async move(steps) {
-		if (steps === 0 || this.isMoving) {
+		if (steps === 0) {
 			return;
 		}
-
-		this.isMoving = true;
 
 		const newCardIndex = this.currentCardIndex + steps;
 		const oldCard = this.#getCard(this.currentCardIndex);
@@ -864,8 +988,6 @@ class CardCarouselUI {
 		);
 
 		oldCard.style.display = "none";
-
-		this.isMoving = false;
 	}
 
 	swipeLeft() {
@@ -874,6 +996,43 @@ class CardCarouselUI {
 
 	swipeRight() {
 		this.move(1);
+	}
+
+	#makeCardHtml({ name, verbs }) {
+		const bestScore = getBestScoreForSet(name);
+
+		return `
+		<div class="card">
+			<div class="card-header">
+				<div class="card-best-score">
+					<div class="card-best-result-percent">${bestScore}%</div>
+					<div class="card-best-result-rank ${GameStatistics.calculateRank(
+						bestScore
+					).toLowerCase()}"></div>
+				</div>
+			</div>
+
+			<span class="card-number">${name}</span>
+			<span class="card-title">Набор неправильных глаголов</span>
+
+			<div class="card-words-block">
+				<span class="card-words-block-title"
+					>Содержит ${verbs.length} глаголов</span
+				>
+
+				<div class="card-words">
+					${verbs
+						.map(
+							({ infinitive }) =>
+								`<span class="card-word">${infinitive}</span>`
+						)
+						.join("\n")}
+				</div>
+			</div>
+
+			<button id="card-play-button-${name}" class="card-play-button button">Начать игру</button>
+		</div>
+		`;
 	}
 }
 
@@ -914,6 +1073,75 @@ class SetSelectionUI {
 				resolve();
 			}, 500);
 		});
+	}
+}
+
+class GameScoreUI {
+	constructor(set, statistics) {
+		this.statistics = statistics;
+		this.set = set;
+		document.body.insertAdjacentHTML("beforeend", this.makeGameScoreHtml());
+
+		document.getElementById("game-score-footer-back-to-carousel").onclick =
+			() => {
+				window.location.reload();
+			};
+	}
+
+	makeGameScoreHtml() {
+		const { statistics } = this.statistics;
+
+		return `
+		<div id="game-score-container">
+			<span id="game-score-congratulation">Ты отлично справился :)</span>
+			<div id="game-score-result">
+				<span id="game-score-percent">${this.statistics.calculatePercent()}%</span>
+				<div id="game-score-rank" class="${this.statistics
+					.calculateRank()
+					.toLowerCase()}"></div>
+			</div>
+
+			<table id="game-score-words-table" cellspacing="0" cellpadding="0">
+				${this.set.verbs
+					.map(({ infinitive }) => {
+						return `
+					<tr class="game-score-words">
+						<td class="game-score-word">${infinitive}</td>
+						${GameStatistics.VERB_TYPES.map((type) => {
+							return `
+							<td class="game-score-result">
+								<div class="game-score-result-indicator ${statistics[infinitive][type]}"></div>
+							</td>
+							`;
+						}).join("\n")}
+					</tr>
+					`;
+					})
+					.join("\n")}
+			</table>
+
+			<div id="game-score-progress-container">
+				<div id="game-score-progress-bar">
+					<div id="game-score-progress-indicator" style="width: ${this.statistics.calculatePercent()}%;"></div>
+				</div>
+
+				<span id="game-score-progress-subtitle">
+					${
+						this.set.verbs.length * GameStatistics.VERB_TYPES.length
+					} ответов, из них ${this.statistics.countCorrect()} правильных, вау!
+				</span>
+			</div>
+
+			<div id="game-score-footer">
+				<span id="game-score-footer-subtitle">
+					Ты прошёл набор #${this.set.name}
+				</span>
+				<button id="game-score-footer-back-to-carousel" class="button">
+					К списку наборов
+				</button>
+			</div>
+		</div>
+		`;
 	}
 }
 

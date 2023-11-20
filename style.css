@@ -1,6 +1,7 @@
 :root {
 	--game-container-top-bottom-padding: 2em;
 	--card-carousel-animation-duration: 300ms;
+	--card-carousel-easing-function: cubic-bezier(0.17, 0.67, 0.25, 1);
 
 	--black: #171d21;
 	--dark-gray: #1f2730;
@@ -25,10 +26,159 @@ body {
 }
 
 body {
-	background-image: url("assets/images/norway-background.jpg");
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: cover;
+}
+
+#game-score-container {
+	background: var(--black);
+	display: flex;
+	width: clamp(30vw, 24em, 90vw);
+	justify-content: center;
+	flex-direction: column;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	padding: 2em;
+	border-radius: 1em;
+	animation: game-score-fade-in 400ms;
+}
+
+@keyframes game-score-fade-in {
+	from {
+		opacity: 0;
+		transform: translate(-50%, -50%) rotate scale(0.9);
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+#game-score-congratulation,
+#game-score-progress-subtitle {
+	opacity: 0.3;
+}
+
+#game-score-percent {
+	font-size: 4em;
+	font-weight: 1000;
+}
+
+#game-score-words-table {
+	width: 100%;
+	border: none;
+	margin-block: 1em;
+	table-layout: fixed;
+}
+
+.game-score-words {
+	padding: 1em;
+}
+
+.game-score-words:nth-child(2n) {
+	background: var(--gray);
+}
+
+.game-score-words:nth-child(2n + 1) {
+	background: var(--dark-gray);
+}
+
+.game-score-word {
+	padding: 0.75em;
+}
+
+#game-score-progress-container {
+	margin-top: 0.5em;
+	margin-bottom: 2em;
+}
+
+#game-score-progress-bar {
+	width: 100%;
+	height: 0.25em;
+	background: var(--gray);
+}
+
+#game-score-progress-indicator {
+	height: 100%;
+	background: var(--dark-green);
+}
+
+.game-score-result-indicator {
+	width: 0.33em;
+	aspect-ratio: 1 / 1;
+	border-radius: 50rem;
+	margin: auto;
+}
+
+.game-score-result-indicator.correct {
+	background: var(--dark-green);
+}
+
+.game-score-result-indicator.typo {
+	background: var(--light-green);
+}
+
+.game-score-result-indicator.incorrect {
+	background: var(--orange);
+}
+
+#game-score-footer-subtitle {
+	opacity: 0.3;
+}
+
+#game-score-footer {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	column-gap: 1em;
+}
+
+.swipe-button {
+	position: absolute;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	top: 50%;
+	width: 4em;
+	aspect-ratio: 1 / 1;
+	background: var(--dark-gray);
+	border-radius: 50rem;
+	filter: drop-shadow(var(--dark-gray) 0 0 1em);
+	transition: transform 100ms ease-in-out;
+	cursor: pointer;
+}
+
+.swipe-button-icon {
+	transform: scale(0.6);
+}
+
+#left-swipe-button {
+	left: 5vw;
+	transform: translateY(-50%);
+}
+
+#right-swipe-button {
+	right: 5vw;
+	transform: translateY(-50%);
+}
+
+#left-swipe-button:hover {
+	transform: translateY(-50%) translateX(-0.25em);
+}
+
+#right-swipe-button:hover {
+	transform: translateY(-50%) translateX(0.25em);
+}
+
+#left-swipe-button:active {
+	transform: translateY(-50%) translateX(-0.5em);
+}
+
+#right-swipe-button:active {
+	transform: translateY(-50%) translateX(0.5em);
 }
 
 .button {
@@ -55,7 +205,7 @@ body {
 
 #word-card {
 	display: flex;
-	width: 30%;
+	width: clamp(30vw, 24em, 80vw);
 	flex-direction: column;
 	justify-content: center;
 	background: var(--black);
@@ -81,7 +231,7 @@ body {
 
 @keyframes card-drop-in {
 	from {
-		transform: translateY(-50vh);
+		transform: translateY(-100vh) rotate(-25deg);
 		opacity: 0;
 	}
 
@@ -136,7 +286,7 @@ body {
 	}
 
 	to {
-		transform: translateX(-50vw);
+		transform: translateX(-100vw);
 		opacity: 0;
 	}
 }
@@ -159,7 +309,7 @@ body {
 	}
 
 	20% {
-		transform: scale(1.1);
+		transform: scale(1.1) rotate(3deg);
 	}
 
 	40% {
@@ -167,7 +317,7 @@ body {
 	}
 
 	60% {
-		transform: scale(1.05);
+		transform: scale(1.05) rotate(-2deg);
 	}
 
 	80% {
@@ -209,7 +359,7 @@ body {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: calc(30% + 6em);
+	width: clamp(30vw, calc(24em + 6em), 80vw);
 }
 
 #word-input {
@@ -288,30 +438,30 @@ body {
 .card.fade-in-left {
 	animation: card-fade-in-left var(--card-carousel-animation-duration)
 		var(--card-carousel-animation-duration)
-		cubic-bezier(0.17, 0.67, 0.25, 1) forwards;
+		var(--card-carousel-easing-function) forwards;
 	opacity: 0;
 }
 
 .card.fade-in-right {
 	animation: card-fade-in-right var(--card-carousel-animation-duration)
 		var(--card-carousel-animation-duration)
-		cubic-bezier(0.17, 0.67, 0.25, 1) forwards;
+		var(--card-carousel-easing-function) forwards;
 	opacity: 0;
 }
 
 .card.fade-out-right {
 	animation: card-fade-out-right var(--card-carousel-animation-duration)
-		cubic-bezier(0.17, 0.67, 0.25, 1) forwards;
+		var(--card-carousel-easing-function) forwards;
 }
 
 .card.fade-out-left {
 	animation: card-fade-out-left var(--card-carousel-animation-duration)
-		cubic-bezier(0.17, 0.67, 0.25, 1) forwards;
+		var(--card-carousel-easing-function) forwards;
 }
 
 @keyframes card-fade-in-left {
 	from {
-		transform: translateX(25vw) scale(0.8) skewY(8deg);
+		transform: translateX(25vw) translateY(-10vh) scale(0.8) skewY(8deg);
 		opacity: 0;
 	}
 
@@ -322,7 +472,7 @@ body {
 
 @keyframes card-fade-in-right {
 	from {
-		transform: translateX(-25vw) scale(0.8) skewY(-8deg);
+		transform: translateX(-25vw) translateY(-10vh) scale(0.8) skewY(-8deg);
 		opacity: 0;
 	}
 
@@ -337,7 +487,7 @@ body {
 	}
 
 	to {
-		transform: translateX(25vw) scale(0.8) skewY(-8deg);
+		transform: translateX(25vw) translateY(-10vh) scale(0.8) skewY(-8deg);
 		opacity: 0;
 	}
 }
@@ -348,7 +498,7 @@ body {
 	}
 
 	to {
-		transform: translateX(-25vw) scale(0.8) skewY(8deg);
+		transform: translateX(-25vw) translateY(-10vh) scale(0.8) skewY(8deg);
 		opacity: 0;
 	}
 }
@@ -523,9 +673,15 @@ body {
 	color: #462e17;
 }
 
+.card-best-result-rank.none:before {
+	content: "";
+	background: transparent;
+	border: dashed 2px var(--gray);
+}
+
 /* =-=-=-=-=-=-=- */
 
-#game-result-rank {
+#game-score-rank {
 	position: absolute;
 	top: -1em;
 	right: -1em;
@@ -534,7 +690,7 @@ body {
 		forwards;
 }
 
-#game-result-rank:before {
+#game-score-rank:before {
 	display: inline-block;
 	width: 2em;
 	aspect-ratio: 1 / 1;
@@ -545,25 +701,25 @@ body {
 	font-size: 1.5em;
 }
 
-#game-result-rank.s:before {
+#game-score-rank.s:before {
 	content: "S";
 	background: var(--dark-green);
 	color: white;
 }
 
-#game-result-rank.a:before {
+#game-score-rank.a:before {
 	content: "A";
 	background: var(--light-green);
 	color: white;
 }
 
-#game-result-rank.b:before {
+#game-score-rank.b:before {
 	content: "B";
 	background: var(--peach);
 	color: #d68c45;
 }
 
-#game-result-rank.c:before {
+#game-score-rank.c:before {
 	content: "C";
 	background: var(--orange);
 	color: #462e17;
