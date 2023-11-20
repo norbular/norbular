@@ -149,6 +149,7 @@ body {
 	filter: drop-shadow(var(--dark-gray) 0 0 1em);
 	transition: transform 100ms ease-in-out;
 	cursor: pointer;
+	z-index: 1000;
 }
 
 .swipe-button-icon {

@@ -913,14 +913,19 @@ class CardCarouselUI {
 		document.addEventListener("touchend", (e) => {
 			touchEndX = e.changedTouches[0].screenX;
 
-			switch (getSwipeLocation()) {
-				case "left":
-					this.swipeRight();
-					break;
+			if (
+				Math.abs(touchEndX - touchStartX) / window.screen.width >
+				0.15
+			) {
+				switch (getSwipeLocation()) {
+					case "left":
+						this.swipeRight();
+						break;
 
-				case "right":
-					this.swipeLeft();
-					break;
+					case "right":
+						this.swipeLeft();
+						break;
+				}
 			}
 		});
 
