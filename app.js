@@ -857,7 +857,18 @@ class CardCarouselUI {
 		this.leftSwipeButton = document.getElementById("left-swipe-button");
 		this.rightSwipeButton = document.getElementById("right-swipe-button");
 
-		for (const set of sets) {
+		let leastBestScoreSetIndex = 0;
+		let leastBestScoreSetScore = Infinity;
+
+		for (const setIndex in sets) {
+			const set = sets[setIndex];
+			const bestScore = getBestScoreForSet(set.name);
+
+			if (bestScore < leastBestScoreSetScore) {
+				leastBestScoreSetIndex = setIndex;
+				leastBestScoreSetScore = bestScore;
+			}
+
 			this.cardCarouselEl.insertAdjacentHTML(
 				"beforeend",
 				this.#makeCardHtml(set)
@@ -870,8 +881,8 @@ class CardCarouselUI {
 			cardPlayButton.onclick = this.#openSet.bind(this, name);
 		}
 
+		this.currentCardIndex = leastBestScoreSetIndex;
 		this.cardEls = this.cardCarouselEl.querySelectorAll(".card");
-		this.currentCardIndex = 0;
 
 		document.onkeydown = (event) => {
 			switch (event.keyCode) {
