@@ -242,9 +242,29 @@ class Question {
 }
 
 class VerbSet {
+	static length = 5;
+
 	constructor(name, ...verbs) {
 		this.name = name;
 		this.verbs = verbs;
+	}
+
+	static fromArray(verbs) {
+		return verbs
+			.sort((a, b) => b[0] - a[0])
+			.map(
+				([priority, translation, infinitive, present, past, perfect]) =>
+					new Verb(infinitive, present, past, perfect, translation)
+			)
+			.reduce((chunks, verb, index) => {
+				const chunkIndex = Math.floor(index / VerbSet.length);
+
+				chunks[chunkIndex] ??= [];
+				chunks[chunkIndex].push(verb);
+
+				return chunks;
+			}, [])
+			.map((verbs, index) => new VerbSet(index + 1, ...verbs));
 	}
 
 	makeQuestions() {
@@ -388,247 +408,377 @@ class GameStatistics {
 	}
 }
 
-const sets = [
-	new VerbSet(
-		"1",
-		new Verb("arbeide", "arbeider", "arbeidet", "arbeidet", "Работать"),
-		new Verb("begynne", "begynner", "begynte", "begynt", "Начинать"),
-		new Verb("bestemme", "bestemmer", "bestemte", "bestemt", "Решать"),
-		new Verb("besøke", "besøker", "besøkte", "besøkt", "Посещать"),
-		new Verb("betale", "betaler", "betalte", "betalt", "Платить")
-	),
+const sets = VerbSet.fromArray([
+	[4, "Просить", "be", "ber", ["ba", "bad"], "bedt"],
+	[5, "Означать", "bety", "betyr", ["betydde", "betød"], "betydd"],
+	[3, "Связывать", "binde", "binder", "bandt", "bundet"],
+	[3, "Кусать", "bite", "biter", ["bet", "beit"], "bitt"],
+	[5, "Становиться", "bli", "blir", ["ble", "blei"], "blitt"],
+	[3, "Ломать", "brekke", "brekker", ["brekte"], ["brekt"]],
+	[3, "Сжигать", "brenne", "brenner", "brant", "brent"],
+	[3, "Ломать", "bryte", "bryter", ["brøyt", "brøt"], "brutt"],
+	[4, "Предлагать", "by", "byr", ["bydde", "bøy", "bød"], ["bydd", "budt"]],
+	[5, "Носить", "bære", "bærer", "bar", "båret"],
+	[4, "Упасть", "dette", "detter", "datt", "dettet"],
+	[5, "Уезжать", "dra", "drar", ["drog", "dro"], ["dradd", "dratt"]],
+	[5, "Пить", "drikke", "drikker", "drakk", "drukket"],
+	[5, "Гнать/Двигать", "drive", "driver", ["drev", "dreiv"], "drevet"],
+	[4, "Падать", "falle", "faller", "falt", "falt"],
+	[5, "Находить", "finne", "finner", "fant", "funnet"],
+	[5, "Летать", "fly", "flyr", "fløy", ["flydd", "fløyet"]],
+	[3, "Течь", "flyte", "flyter", ["fløyt", "fløt"], "flytt"],
+	[3, "Исчезнуть", "forsvinne", "forsvinner", "forsvant", "forsvunnet"],
+	[5, "Рассказать", "fortelle", "forteller", "fortalte", "fortalt"],
+	[4, "Замораживать", "fryse", "fryser", ["frøys", "frøs"], "frosset"],
+	[5, "Получать", "få", "får", "fikk", "fått"],
+	[4, "Следовать", "følge", "følger", "fulgte", "fulgt"],
+	[5, "Давать", "gi", "gir", ["ga", "gav"], "gitt"],
+	[4, "Быть в силе", "gjelde", "gjelder", ["gjeldte"], ["gjeldt"]],
+	[5, "Делать", "gjøre", "gjør", "gjorde", "gjort"],
+	[3, "Скользить/Катиться", "gli", "glir", ["glei", "gled"], "glidd"],
+	[
+		2,
+		"Копать",
+		"grave",
+		"graver",
+		["gravde", "grava", "gravet"],
+		["gravd", "grava", "gravet"],
+	],
+	[
+		2,
+		"Плакать/Кривиться",
+		"grine",
+		"griner",
+		["grinte", "gren", "grein"],
+		"grint",
+	],
+	[3, "Хватать", "gripe", "griper", ["grep", "greip"], "grepet"],
+	[5, "Плакать", "gråte", "gråter", "gråt", "grått"],
+	[5, "Идти", "gå", "går", "gikk", "gått"],
+	[5, "Иметь", "ha", "har", "hadde", "hatt"],
+	[5, "Звать", "hete", "heter", ["hette", "het"], "hett"],
+	[4, "Бросать", "hive", "hiver", ["hivde", "heiv", "hev"], "hivd"],
+	[5, "Помогать", "hjelpe", "hjelper", "hjalp", "hjulpet"],
+	[3, "Рубить", "hogge", "hogger", ["hogde", "hogg"], ["hogd"]],
+	[4, "Держать", "holde", "holder", "holdt", "holdt"],
+	[2, "Щипать", "klype", "klyper", ["klypte", "kløp"], ["klypt", "kløpet"]],
+	[3, "Ломаться", "knekke", "knekker", ["knekte"], ["knekt"]],
+	[5, "Приходить", "komme", "kommer", "kom", "kommet"],
+	[3, "Ползать", "krype", "kryper", ["krøyp", "krøp"], "krøpet"],
+	[5, "Позволять", "la", "lar", "lot", "latt"],
+	[3, "Притворяться", "late", "later", "lot", "latt"],
+	[5, "Смеяться", "le", "ler", "lo", "ledd"],
+	[5, "Класть", "legge", "legger", "la", "lagt"],
+	[5, "Лежать", "ligge", "ligger", "lå", "ligget"],
+	[4, "Звучать", "lyde", "lyder", ["lydde", "lød"], ["lydd", "lydt"]],
+	[4, "Лгать", "lyve", "lyver", "løy", "løyet"],
+	[5, "Бежать", "løpe", "løper", "løp", ["løpet", "løpt"]],
+	[3, "Чихать", "nyse", "nyser", ["nyste", "nøys", "nøs"], "nyst"],
+	[3, "Наслаждаться", "nyte", "nyter", ["nøyt", "nøt"], "nytt"],
+	[2, "Свистеть/Пищать", "pipe", "piper", ["pep", "peip"], "pepet"],
+	[
+		3,
+		"Доставать",
+		"rekke",
+		"rekker",
+		["rekket", "rekkte", "rekte"],
+		["rekket", "rekkt", "rekt"],
+	],
+	[3, "Течь", "renne", "renner", "rant", "rent"],
+	[3, "Ехать (верхом)", "ri", "rir", ["rei", "red"], "ridd"],
+	[2, "Рвать", "rive", "river", ["rev", "reiv"], "revet"],
+	[5, "Видеть", "se", "ser", "så", "sett"],
+	[4, "Продавать", "selge", "selger", "solgte", "solgt"],
+	[5, "Ставить", "sette", "setter", "satte", "satt"],
+	[5, "Сказать", "si", "sier", "sa", "sagt"],
+	[5, "Сидеть", "sitte", "sitter", "satt", "sittet"],
+	[3, "Трястись", "skjelve", "skjelver", "skalv", "skjelvet"],
+	[2, "Резать", "skjære", "skjærer", "skar", "skåret"],
+	[2, "Скользить", "skli", "sklir", ["sklidde", "sklei", "skled"], "sklidd"],
+	[3, "Кричать", "skrike", "skriker", ["skrek", "skreik"], "skreket"],
+	[5, "Писать", "skrive", "skriver", ["skrev", "skreiv"], "skrevet"],
+	[3, "Хвастаться", "skryte", "skryter", ["skrytte", "skrøt"], "skrytt"],
+	[3, "Стрелять", "skyte", "skyter", ["skøyt", "skjøt"], "skutt"],
+	[3, "Толкать", "skyve", "skyver", ["skøyv", "skjøv"], ["skjøvet"]],
+	[4, "Ронять", "slippe", "slipper", "slapp", "sluppet"],
+	[5, "Ударить", "slå", "slår", "slo", "slått"],
+	[3, "Хлопать", "smelle", "smeller", "smalt", "smelt"],
+	[
+		3,
+		"Обманывать/Жульничать",
+		"snyte",
+		"snyter",
+		["snytte", "snøt"],
+		"snytt",
+	],
+	[5, "Спать", "sove", "sover", "sov", "sovet"],
+	[4, "Трескаться", "sprekke", "sprekker", "sprakk", "sprukket"],
+	[4, "Подпрыгивать", "sprette", "spretter", "spratt", "sprettet"],
+	[3, "Скакать/Бегать", "springe", "springer", "sprang", "sprunget"],
+	[5, "Спрашивать", "spørre", "spør", "spurte", "spurt"],
+	[4, "Жалить", "stikke", "stikker", "stakk", "stukket"],
+	[4, "Красть", "stjele", "stjeler", "stjal", "stjålet"],
+	[4, "Тянуться", "strekke", "strekker", "strakk", "strukket"],
+	[4, "Гладить", "stryke", "stryker", ["strøyk", "strøk"], "strøket"],
+	[5, "Стоять", "stå", "står", ["sto", "stod"], "stått"],
+	[4, "Клясться", "sverge", "sverger", ["svor"], ["svoret"]],
+	[3, "Предать", "svike", "sviker", ["svek", "sveik"], "sveket"],
+	[5, "Петь", "synge", "synger", "sang", "sunget"],
+	[3, "Погружаться/Тонуть", "synke", "synker", "sank", "sunket"],
+	[5, "Брать", "ta", "tar", "tok", "tatt"],
+	[5, "Встречать", "treffe", "treffer", "traff", "truffet"],
+	[4, "Тянуть/Тащить", "trekke", "trekker", "trakk", "trukket"],
+	[4, "Вынуждать", "tvinge", "tvinger", "tvang", "tvunget"],
+	[3, "Сушить", "tørre", "tør", ["torde", "turte"], ["tort", "turt"]],
+	[5, "Выбирать", "velge", "velger", "valgte", "valgt"],
+	[4, "Отступать/Уступать", "vike", "viker", "vikte", "vikt"],
+	[5, "Выиграть", "vinne", "vinner", "vant", "vunnet"],
+	[5, "Знать", "vite", ["vet", "veit"], "visste", "visst"],
+	[4, "Крутить/Вращать", "vri", "vrir", ["vridde", "vrei", "vred"], "vridd"],
+	[5, "Быть", "være", "er", "var", "vært"],
+]);
 
-	new VerbSet(
-		"2",
-		new Verb("bli", "blir", ["ble", "blei"], "blitt", "Становиться"),
-		new Verb("bo", "bor", "bodde", "bodd", "Проживать"),
-		new Verb("bringe", "bringer", "brakte", "brakt", "Приносить"),
-		new Verb("bruke", "bruker", "brukte", "brukt", "Использовать")
-	),
+// const sets = [
+// 	new VerbSet(
+// 		"1",
+// 		new Verb("arbeide", "arbeider", "arbeidet", "arbeidet", "Работать"),
+// 		new Verb("begynne", "begynner", "begynte", "begynt", "Начинать"),
+// 		new Verb("bestemme", "bestemmer", "bestemte", "bestemt", "Решать"),
+// 		new Verb("besøke", "besøker", "besøkte", "besøkt", "Посещать"),
+// 		new Verb("betale", "betaler", "betalte", "betalt", "Платить")
+// 	),
 
-	new VerbSet(
-		"3",
-		new Verb("burde", "bør", "burde", "burdet", "Следует"),
-		new Verb("bære", "bærer", "bar", "båret", "Нести"),
-		new Verb("dele", "deler", "delte", "delt", "Разделять"),
-		new Verb(
-			["dra", "drage"],
-			["drar", "drager"],
-			"drog",
-			["dradd", "dratt"],
-			"Тащить"
-		),
-		new Verb("drepe", "dreper", "drepte", "drept", "Убивать")
-	),
+// 	new VerbSet(
+// 		"2",
+// 		new Verb("bli", "blir", ["ble", "blei"], "blitt", "Становиться"),
+// 		new Verb("bo", "bor", "bodde", "bodd", "Проживать"),
+// 		new Verb("bringe", "bringer", "brakte", "brakt", "Приносить"),
+// 		new Verb("bruke", "bruker", "brukte", "brukt", "Использовать")
+// 	),
 
-	new VerbSet(
-		"4",
-		new Verb("drikke", "drikker", "drakk", "drukket", "Пить"),
-		new Verb("drive", "driver", ["drev", "dreiv"], "drevet", "Оперировать"),
-		new Verb("dø", "dør", ["dødde", "døde"], "dødd", "Умирать"),
-		new Verb("eie", "eier", ["eide", "åtte"], ["eid", "ått"], "Владеть")
-	),
+// 	new VerbSet(
+// 		"3",
+// 		new Verb("burde", "bør", "burde", "burdet", "Следует"),
+// 		new Verb("bære", "bærer", "bar", "båret", "Нести"),
+// 		new Verb("dele", "deler", "delte", "delt", "Разделять"),
+// 		new Verb(
+// 			["dra", "drage"],
+// 			["drar", "drager"],
+// 			"drog",
+// 			["dradd", "dratt"],
+// 			"Тащить"
+// 		),
+// 		new Verb("drepe", "dreper", "drepte", "drept", "Убивать")
+// 	),
 
-	new VerbSet(
-		"5",
-		new Verb("falle", "faller", "falt", "falt", "Падать"),
-		new Verb("finnes", "finnes", "fantes", "fantes", "Существовать"),
-		new Verb("finne", "finner", "fant", "funnet", "Находить"),
-		new Verb(
-			"foretrekke",
-			"foretrekker",
-			"foretrakk",
-			"foretrukket",
-			"Предпочитать"
-		),
-		new Verb("forklare", "forklarer", "forklarte", "forklart", "Объяснять")
-	),
+// 	new VerbSet(
+// 		"4",
+// 		new Verb("drikke", "drikker", "drakk", "drukket", "Пить"),
+// 		new Verb("drive", "driver", ["drev", "dreiv"], "drevet", "Оперировать"),
+// 		new Verb("dø", "dør", ["dødde", "døde"], "dødd", "Умирать"),
+// 		new Verb("eie", "eier", ["eide", "åtte"], ["eid", "ått"], "Владеть")
+// 	),
 
-	new VerbSet(
-		"6",
-		new Verb("forstå", "forstår", "forstod", "forstått", "Понимать"),
-		new Verb(
-			"fortelle",
-			"forteller",
-			"fortalte",
-			"fortalt",
-			"Рассказывать"
-		),
-		new Verb("få", "får", "fikk", "fått", "Получать"),
-		new Verb("gi", "gir", "gav", "gitt", "Давать")
-	),
+// 	new VerbSet(
+// 		"5",
+// 		new Verb("falle", "faller", "falt", "falt", "Падать"),
+// 		new Verb("finnes", "finnes", "fantes", "fantes", "Существовать"),
+// 		new Verb("finne", "finner", "fant", "funnet", "Находить"),
+// 		new Verb(
+// 			"foretrekke",
+// 			"foretrekker",
+// 			"foretrakk",
+// 			"foretrukket",
+// 			"Предпочитать"
+// 		),
+// 		new Verb("forklare", "forklarer", "forklarte", "forklart", "Объяснять")
+// 	),
 
-	new VerbSet(
-		"7",
-		new Verb(
-			"gjelde",
-			"gjelder",
-			["gjaldt", "galdt"],
-			"gjeldt",
-			"Быть актуальным"
-		),
-		new Verb("gjøre", "gjør", "gjorde", "gjort", "Делать"),
-		new Verb("glemme", "glemmer", "glemte", "glemt", "Забыть"),
-		new Verb("gå", "går", "gikk", "gått", "Идти"),
-		new Verb("ha", "har", "hadde", "hatt", "Иметь")
-	),
+// 	new VerbSet(
+// 		"6",
+// 		new Verb("forstå", "forstår", "forstod", "forstått", "Понимать"),
+// 		new Verb(
+// 			"fortelle",
+// 			"forteller",
+// 			"fortalte",
+// 			"fortalt",
+// 			"Рассказывать"
+// 		),
+// 		new Verb("få", "får", "fikk", "fått", "Получать"),
+// 		new Verb("gi", "gir", "gav", "gitt", "Давать")
+// 	),
 
-	new VerbSet(
-		"8",
-		new Verb("handle", "handler", "handlet", "handlet", "Делать покупки"),
-		new Verb("hende", "hender", "hendte", "hendt", "Случаться"),
-		new Verb("hente", "henter", "hentet", "hendt", "Приносить"),
-		new Verb("hete", "heter", ["het", "hette"], "hett", "Звать")
-	),
+// 	new VerbSet(
+// 		"7",
+// 		new Verb(
+// 			"gjelde",
+// 			"gjelder",
+// 			["gjaldt", "galdt"],
+// 			"gjeldt",
+// 			"Быть актуальным"
+// 		),
+// 		new Verb("gjøre", "gjør", "gjorde", "gjort", "Делать"),
+// 		new Verb("glemme", "glemmer", "glemte", "glemt", "Забыть"),
+// 		new Verb("gå", "går", "gikk", "gått", "Идти"),
+// 		new Verb("ha", "har", "hadde", "hatt", "Иметь")
+// 	),
 
-	new VerbSet(
-		"9",
-		new Verb("hjelpe", "hjelper", "hjalp", "hjulpet", "Помогать"),
-		new Verb("holde", "holder", "holdt", "holdt", "Держать"),
-		new Verb("huske", "husker", "husket", "husket", "Помнить"),
-		new Verb("høre", "hører", "hørte", "hørt", "Слышать"),
-		new Verb(
-			"interessere",
-			"interesserer",
-			"interesserte",
-			"interessert",
-			"Интересоваться"
-		)
-	),
+// 	new VerbSet(
+// 		"8",
+// 		new Verb("handle", "handler", "handlet", "handlet", "Делать покупки"),
+// 		new Verb("hende", "hender", "hendte", "hendt", "Случаться"),
+// 		new Verb("hente", "henter", "hentet", "hendt", "Приносить"),
+// 		new Verb("hete", "heter", ["het", "hette"], "hett", "Звать")
+// 	),
 
-	new VerbSet(
-		"10",
-		new Verb("jobbe", "jobber", "jobbet", "jobbet", "Работать"),
-		new Verb(
-			"kjenne",
-			"kjenner",
-			"kjente",
-			"kjent",
-			"Знать",
-			"О человеке/месте"
-		),
-		new Verb("kjøpe", "kjøper", "kjøpte", "kjøpt", "Покупать"),
-		new Verb("kjøre", "kjører", "kjørte", "kjørt", "Водить")
-	),
+// 	new VerbSet(
+// 		"9",
+// 		new Verb("hjelpe", "hjelper", "hjalp", "hjulpet", "Помогать"),
+// 		new Verb("holde", "holder", "holdt", "holdt", "Держать"),
+// 		new Verb("huske", "husker", "husket", "husket", "Помнить"),
+// 		new Verb("høre", "hører", "hørte", "hørt", "Слышать"),
+// 		new Verb(
+// 			"interessere",
+// 			"interesserer",
+// 			"interesserte",
+// 			"interessert",
+// 			"Интересоваться"
+// 		)
+// 	),
 
-	new VerbSet(
-		"11",
-		new Verb("komme", "kommer", "kom", "kommet", "Приходить"),
-		new Verb("koste", "koster", ["kostet", "kosta"], "kostet", "Стоить"),
-		new Verb("kunne", "kan", "kunne", "kunnet", "Мочь"),
-		new Verb("la", "lar", "lot", "latt", "Позволить"),
-		new Verb(
-			"lage",
-			"lager",
-			["laget", "laga", "lagde"],
-			["laget", "laga", "lagd"],
-			"Создавать"
-		)
-	),
+// 	new VerbSet(
+// 		"10",
+// 		new Verb("jobbe", "jobber", "jobbet", "jobbet", "Работать"),
+// 		new Verb(
+// 			"kjenne",
+// 			"kjenner",
+// 			"kjente",
+// 			"kjent",
+// 			"Знать",
+// 			"О человеке/месте"
+// 		),
+// 		new Verb("kjøpe", "kjøper", "kjøpte", "kjøpt", "Покупать"),
+// 		new Verb("kjøre", "kjører", "kjørte", "kjørt", "Водить")
+// 	),
 
-	new VerbSet(
-		"12",
-		new Verb("legge", "legge", "la", "lagt", "Класть"),
-		new Verb("lese", "leser", "leste", "lest", "Читать"),
-		new Verb("leve", "lever", "levde", "levd", "Жить"),
-		new Verb("ligge", "ligger", "lå", "ligget", "Лежать")
-	),
+// 	new VerbSet(
+// 		"11",
+// 		new Verb("komme", "kommer", "kom", "kommet", "Приходить"),
+// 		new Verb("koste", "koster", ["kostet", "kosta"], "kostet", "Стоить"),
+// 		new Verb("kunne", "kan", "kunne", "kunnet", "Мочь"),
+// 		new Verb("la", "lar", "lot", "latt", "Позволить"),
+// 		new Verb(
+// 			"lage",
+// 			"lager",
+// 			["laget", "laga", "lagde"],
+// 			["laget", "laga", "lagd"],
+// 			"Создавать"
+// 		)
+// 	),
 
-	new VerbSet(
-		"13",
-		new Verb(
-			["ligne", "likne"],
-			["ligner", "likner"],
-			["lignet", "liknet"],
-			["lignet", "liknet"],
-			"Быть похожим"
-		),
-		new Verb("like", "liker", "likte", "likt", "Нравиться"),
-		new Verb("lære", "lærer", "lærte", "lært", "Учить"),
-		new Verb("løpe", "løper", "løp", ["løpt", "løpet"], "Бежать"),
-		new Verb("melde", "melder", "meldte", "meldt", "Анонсировать")
-	),
+// 	new VerbSet(
+// 		"12",
+// 		new Verb("legge", "legge", "la", "lagt", "Класть"),
+// 		new Verb("lese", "leser", "leste", "lest", "Читать"),
+// 		new Verb("leve", "lever", "levde", "levd", "Жить"),
+// 		new Verb("ligge", "ligger", "lå", "ligget", "Лежать")
+// 	),
 
-	new VerbSet(
-		"14",
-		new Verb("mene", "mener", "mente", "ment", "Иметь в виду"),
-		new Verb("møte", "møter", "møtte", "møtt", "Встречать"),
-		new Verb("måtte", "må", "måtte", "måttet", "Должен"),
-		new Verb(
-			"prøve",
-			"prøver",
-			"prøvde",
-			"prøvd",
-			"Пробовать",
-			"Совершать попытку"
-		)
-	),
+// 	new VerbSet(
+// 		"13",
+// 		new Verb(
+// 			["ligne", "likne"],
+// 			["ligner", "likner"],
+// 			["lignet", "liknet"],
+// 			["lignet", "liknet"],
+// 			"Быть похожим"
+// 		),
+// 		new Verb("like", "liker", "likte", "likt", "Нравиться"),
+// 		new Verb("lære", "lærer", "lærte", "lært", "Учить"),
+// 		new Verb("løpe", "løper", "løp", ["løpt", "løpet"], "Бежать"),
+// 		new Verb("melde", "melder", "meldte", "meldt", "Анонсировать")
+// 	),
 
-	new VerbSet(
-		"15",
-		new Verb("reise", "reiser", "reiste", "reist", "Путешествовать"),
-		new Verb("se", "ser", "så", "sett", "Видеть"),
-		new Verb("selge", "selger", "solgte", "solgt", "Продавать"),
-		new Verb("sende", "sender", "sendte", "sendt", "Отправлять"),
-		new Verb("sette", "setter", "satte", "satt", "Устанавливать")
-	),
+// 	new VerbSet(
+// 		"14",
+// 		new Verb("mene", "mener", "mente", "ment", "Иметь в виду"),
+// 		new Verb("møte", "møter", "møtte", "møtt", "Встречать"),
+// 		new Verb("måtte", "må", "måtte", "måttet", "Должен"),
+// 		new Verb(
+// 			"prøve",
+// 			"prøver",
+// 			"prøvde",
+// 			"prøvd",
+// 			"Пробовать",
+// 			"Совершать попытку"
+// 		)
+// 	),
 
-	new VerbSet(
-		"16",
-		new Verb("si", "*sier", "sa", "sagt", "Сказать"),
-		new Verb("sitte", "sitter", "satt", "sittet", "Сесть"),
-		new Verb("skje", "skjer", "skjedde", "skjedd", "Случаться"),
-		new Verb("skrive", "skriver", "skrev", "skrevet", "Писать")
-	),
+// 	new VerbSet(
+// 		"15",
+// 		new Verb("reise", "reiser", "reiste", "reist", "Путешествовать"),
+// 		new Verb("se", "ser", "så", "sett", "Видеть"),
+// 		new Verb("selge", "selger", "solgte", "solgt", "Продавать"),
+// 		new Verb("sende", "sender", "sendte", "sendt", "Отправлять"),
+// 		new Verb("sette", "setter", "satte", "satt", "Устанавливать")
+// 	),
 
-	new VerbSet(
-		"17",
-		new Verb("skulle", "skal", "skulle", "skullet", "Следует"),
-		new Verb("slå", "slår", "slo", "slått", "Ударить"),
-		new Verb("slåss", "slåss", "sloss", "slåss", "Драться"),
-		new Verb("sove", "sover", "sov", "sovet", "Спать"),
-		new Verb("spørre", "spør", "spurte", "spurt", "Спросить")
-	),
+// 	new VerbSet(
+// 		"16",
+// 		new Verb("si", "*sier", "sa", "sagt", "Сказать"),
+// 		new Verb("sitte", "sitter", "satt", "sittet", "Сесть"),
+// 		new Verb("skje", "skjer", "skjedde", "skjedd", "Случаться"),
+// 		new Verb("skrive", "skriver", "skrev", "skrevet", "Писать")
+// 	),
 
-	new VerbSet(
-		"18",
-		new Verb("stå", "står", "stod", "stått", "Стоять"),
-		new Verb(
-			"synes",
-			["synes", "syns"],
-			"syntes",
-			["synes", "syns"],
-			"Думать"
-		),
-		new Verb("søke", "søker", "søkte", "søkt", "Искать"),
-		new Verb("ta", "tar", "tok", "tatt", "Брать")
-	),
+// 	new VerbSet(
+// 		"17",
+// 		new Verb("skulle", "skal", "skulle", "skullet", "Следует"),
+// 		new Verb("slå", "slår", "slo", "slått", "Ударить"),
+// 		new Verb("slåss", "slåss", "sloss", "slåss", "Драться"),
+// 		new Verb("sove", "sover", "sov", "sovet", "Спать"),
+// 		new Verb("spørre", "spør", "spurte", "spurt", "Спросить")
+// 	),
 
-	new VerbSet(
-		"19",
-		new Verb("tenke", "tenker", "tenkte", "tenkt", "Думать"),
-		new Verb("treffe", "treffer", "traff", "truffet", "Встречать"),
-		new Verb(
-			"trives",
-			"trives",
-			"trivdes",
-			["trives", "trivs"],
-			"Наслаждаться"
-		),
-		new Verb("tro", "tror", "trodde", "trodd", "Надеяться"),
-		new Verb("vente", "venter", "ventet", "ventet", "Ждать"),
-		new Verb("ville", "vil", "ville", "villet", "Хотеть")
-	),
+// 	new VerbSet(
+// 		"18",
+// 		new Verb("stå", "står", "stod", "stått", "Стоять"),
+// 		new Verb(
+// 			"synes",
+// 			["synes", "syns"],
+// 			"syntes",
+// 			["synes", "syns"],
+// 			"Думать"
+// 		),
+// 		new Verb("søke", "søker", "søkte", "søkt", "Искать"),
+// 		new Verb("ta", "tar", "tok", "tatt", "Брать")
+// 	),
 
-	new VerbSet(
-		"20",
-		new Verb("vise", "viser", "viste", "vist", "Показывать"),
-		new Verb("vite", "vet", "visste", "visst", "Знать"),
-		new Verb("være", "er", "var", "vært", "Быть"),
-		new Verb("ønske", "ønsker", "ønsket", "ønsket", "Хотеть"),
-		new Verb("åpne", "åpner", "åpnet", "åpnet", "Открывать")
-	),
-];
+// 	new VerbSet(
+// 		"19",
+// 		new Verb("tenke", "tenker", "tenkte", "tenkt", "Думать"),
+// 		new Verb("treffe", "treffer", "traff", "truffet", "Встречать"),
+// 		new Verb(
+// 			"trives",
+// 			"trives",
+// 			"trivdes",
+// 			["trives", "trivs"],
+// 			"Наслаждаться"
+// 		),
+// 		new Verb("tro", "tror", "trodde", "trodd", "Надеяться"),
+// 		new Verb("vente", "venter", "ventet", "ventet", "Ждать"),
+// 		new Verb("ville", "vil", "ville", "villet", "Хотеть")
+// 	),
+
+// 	new VerbSet(
+// 		"20",
+// 		new Verb("vise", "viser", "viste", "vist", "Показывать"),
+// 		new Verb("vite", "vet", "visste", "visst", "Знать"),
+// 		new Verb("være", "er", "var", "vært", "Быть"),
+// 		new Verb("ønske", "ønsker", "ønsket", "ønsket", "Хотеть"),
+// 		new Verb("åpne", "åpner", "åpnet", "åpnet", "Открывать")
+// 	),
+// ];
 
 class IrregularVerbsUI {
 	static CORRECT_CARD_CLASS_CLEANING_AFTER_MS = 1500;
